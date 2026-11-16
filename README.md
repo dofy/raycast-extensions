@@ -15,14 +15,6 @@
 
 JWT Editor 提供解码和查看功能，不验证 token 签名。
 
-## SSH Connections
-
-在 Raycast 中浏览和搜索 `~/.ssh/config` 中的主机，管理连接及常用 SSH 选项，并使用 Terminal、iTerm 或 Ghostty 连接。支持自定义 emoji、识别 SSH Config Editor 图标，以及显示条件路由和静态连接配置。
-
-![SSH Connections 示例连接列表](ssh-manager/assets/screenshots/connections.jpg)
-
-截图使用示例地址。安装、快捷键、终端授权和配置编辑限制见 [SSH Connections 使用说明](ssh-manager/README.md)。
-
 ## 安装与开发
 
 需要安装 Raycast、Node.js 和 pnpm。建议使用 Node.js 22.22.2+ 或 24 LTS；这是本地构建工具的运行环境，扩展执行时的 Node 由 Raycast 管理。参见 [Raycast 版本说明](https://developers.raycast.com/information/versioning)和 [CLI 运行环境变更](https://developers.raycast.com/misc/changelog)。
