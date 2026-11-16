@@ -5,7 +5,12 @@
   "description": "Translate selected or entered text with an OpenAI-compatible API",
   "icon": "extension-icon.png",
   "author": "dofy",
+  "owner": "phpz-xyz",
+  "access": "private",
   "license": "MIT",
+  "categories": ["Productivity"],
+  "platforms": ["macOS"],
+  "keywords": ["translation", "translate", "language", "openai", "text"],
   "commands": [
     {
       "name": "translate",
