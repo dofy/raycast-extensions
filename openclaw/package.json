@@ -3,7 +3,7 @@
   "name": "openclaw",
   "title": "OpenClaw",
   "description": "Manage your OpenClaw gateway: status, sessions, logs and restart",
-  "icon": "extension-icon.png",
+  "icon": "openclaw-icon-transparent.png",
   "author": "dofy",
   "owner": "phpz-xyz",
   "access": "private",
