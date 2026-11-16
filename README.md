@@ -10,6 +10,7 @@
 | OpenClaw     | [openclaw](openclaw/README.md)         | Status、Sessions、Logs、Restart：查看本机 Gateway 状态、会话、日志，以及手动重启/清理    | 本机 OpenClaw CLI 和 Gateway |
 | LinguaDock   | [linguadock](linguadock/README.md)     | Translate Text：选区或手动输入翻译，支持 21 种目标语言及中英自动互译                     | 自定义 OpenAI-compatible API |
 | Emoji Append | [emoji-append](emoji-append/README.md) | Append Contextual Emoji：按快捷键为选中文字追加 1～3 个应景 emoji                        | 自定义 OpenAI-compatible API |
+| SSH Connections | [ssh-manager](ssh-manager/README.md) | SSH Connections：管理、搜索并连接 SSH 主机，选择默认终端 | 本机 SSH 和终端 |
 | Kaon Router  | [kaon](kaon/README.md)                 | Kaon Balance：菜单栏显示当日花费；Kaon Usage：预算、限速及按模型/Key/供应商/天的用量明细 | Kaon Admin API（usage:read） |
 
 JWT Editor 提供解码和查看功能，不验证 token 签名。
