@@ -13,6 +13,19 @@
 | SSH Connections | [ssh-manager](ssh-manager/README.md) | SSH Connections：管理、搜索并连接 SSH 主机，选择默认终端 | 本机 SSH 和终端 |
 | Kaon Router  | [kaon](kaon/README.md)                 | Kaon Balance：菜单栏显示当日花费；Kaon Usage：预算、限速及按模型/Key/供应商/天的用量明细 | Kaon Admin API（usage:read） |
 
+## 发布与安装
+
+| 扩展 | 发布渠道 | 状态 |
+| --- | --- | --- |
+| JWT Editor（公开版名称 JWT Decoder） | Raycast 公开 Store | [审核中](https://github.com/raycast/extensions/pull/33566) |
+| Emoji Append | Raycast 公开 Store | [审核中](https://github.com/raycast/extensions/pull/33567) |
+| SSH Connections | Raycast 公开 Store | [审核中](https://github.com/raycast/extensions/pull/33568) |
+| OpenClaw（公开版名称 OpenClaw Gateway Manager） | Raycast 公开 Store | [审核中](https://github.com/raycast/extensions/pull/33569) |
+| Kaon Router | phpZ.xyz 私有 Store | [已发布](https://www.raycast.com/phpz-xyz/kaon) |
+| LinguaDock | phpZ.xyz 私有 Store | [已发布](https://www.raycast.com/phpz-xyz/linguadock) |
+
+公开版需要 Raycast 审核并合并后才会上架；审核期间可按下方方法在本地开发使用。私有 Store 扩展仅供组织成员安装。公开版名称或功能可能因审核发生变化，请以对应 PR 的状态为准。
+
 ## 安装与开发
 
 需要安装 Raycast、Node.js 和 pnpm。建议使用 Node.js 22.22.2+ 或 24 LTS；这是本地构建工具的运行环境，扩展执行时的 Node 由 Raycast 管理。参见 [Raycast 版本说明](https://developers.raycast.com/information/versioning)和 [CLI 运行环境变更](https://developers.raycast.com/misc/changelog)。
