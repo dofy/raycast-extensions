@@ -13,8 +13,6 @@
 | SSH Connections | [ssh-manager](ssh-manager/README.md) | SSH Connections：管理、搜索并连接 SSH 主机，选择默认终端 | 本机 SSH 和终端 |
 | Kaon Router  | [kaon](kaon/README.md)                 | Kaon Balance：菜单栏显示当日花费；Kaon Usage：预算、限速及按模型/Key/供应商/天的用量明细 | Kaon Admin API（usage:read） |
 
-JWT Editor 提供解码和查看功能，不验证 token 签名。
-
 ## 安装与开发
 
 需要安装 Raycast、Node.js 和 pnpm。建议使用 Node.js 22.22.2+ 或 24 LTS；这是本地构建工具的运行环境，扩展执行时的 Node 由 Raycast 管理。参见 [Raycast 版本说明](https://developers.raycast.com/information/versioning)和 [CLI 运行环境变更](https://developers.raycast.com/misc/changelog)。
