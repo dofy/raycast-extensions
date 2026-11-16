@@ -15,6 +15,14 @@
 
 JWT Editor 提供解码和查看功能，不验证 token 签名。
 
+## SSH Connections
+
+在 Raycast 中浏览和搜索 `~/.ssh/config` 中的主机，管理连接及常用 SSH 选项，并使用 Terminal、iTerm 或 Ghostty 连接。支持自定义 emoji、识别 SSH Config Editor 图标，以及显示条件路由和静态连接配置。
+
+![SSH Connections 示例连接列表](ssh-manager/assets/screenshots/connections.jpg)
+
+截图使用示例地址。安装、快捷键、终端授权和配置编辑限制见 [SSH Connections 使用说明](ssh-manager/README.md)。
+
 ## 安装与开发
 
 需要安装 Raycast、Node.js 和 pnpm。建议使用 Node.js 22.22.2+ 或 24 LTS；这是本地构建工具的运行环境，扩展执行时的 Node 由 Raycast 管理。参见 [Raycast 版本说明](https://developers.raycast.com/information/versioning)和 [CLI 运行环境变更](https://developers.raycast.com/misc/changelog)。
@@ -47,5 +55,6 @@ pnpm build
 - Emoji Append 和 LinguaDock 在各自扩展设置中独立填写 API Base URL、API Key、模型。API Key 使用 password 字段，源码不包含密钥；执行时，输入文字会发送到配置的服务。
 - Kaon Router 读 Kaon Admin API，只需 `usage:read` scope。token 可填在扩展设置（password 字段），也可留空改读 `~/.config/kaon/token`，与 Hammerspoon 的菜单栏组件共用同一个文件；token 不进缓存，也不出现在界面文案。401/403/429 和 Kaon 的停止信号会让扩展停止请求，需手动 Retry 清除，详见插件 README。
 - JWT Editor 在本地解码，不验证签名。Quick Link 会将 token 放入链接上下文并保存到 Raycast；不适合保存长期有效或生产用途的 token。
+- SSH Connections 读取和编辑本机 SSH 配置，密码和私钥内容由 SSH 管理；条件路由在连接时由 SSH 判断。详见 [SSH Connections 使用说明](ssh-manager/README.md)。
 - OpenClaw 调用本机 CLI，CLI、状态目录、配置文件和日志路径支持自动发现或自定义，超时及日志展示参数均可在扩展设置中调整，详见插件 README。重启和清理会改变 Gateway/会话状态，只有执行相应动作时才触发。
 - `pnpm dev`/`pnpm build` 是本地开发操作；`publish` 类脚本会发布扩展，应在确认发布目标后单独执行。
