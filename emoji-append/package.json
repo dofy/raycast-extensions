@@ -5,7 +5,11 @@
   "description": "Append contextual emojis to selected text with your own API",
   "icon": "icon.png",
   "author": "dofy",
+  "owner": "phpz-xyz",
+  "access": "private",
   "license": "MIT",
+  "platforms": ["macOS"],
+  "keywords": ["emoji", "writing", "text", "ai", "context"],
   "categories": [
     "Productivity",
     "Fun"

@@ -5,7 +5,12 @@
   "description": "Kaon Router spend against your daily budget, in the menu bar and as a usage breakdown",
   "icon": "extension-icon.png",
   "author": "dofy",
+  "owner": "phpz-xyz",
+  "access": "private",
   "license": "MIT",
+  "categories": ["Developer Tools", "Productivity"],
+  "platforms": ["macOS"],
+  "keywords": ["kaon", "usage", "budget", "spend", "api"],
   "commands": [
     {
       "name": "balance",

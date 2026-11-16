@@ -5,7 +5,12 @@
   "description": "Save and connect to SSH hosts from Raycast",
   "icon": "extension-icon.png",
   "author": "dofy",
+  "owner": "phpz-xyz",
+  "access": "private",
   "license": "MIT",
+  "categories": ["Developer Tools", "System"],
+  "platforms": ["macOS"],
+  "keywords": ["ssh", "connections", "terminal", "servers", "remote"],
   "commands": [
     {
       "name": "connections",
