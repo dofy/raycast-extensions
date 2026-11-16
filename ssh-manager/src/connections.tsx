@@ -85,7 +85,7 @@ function ConfigForm({
   return (
     <Form
       navigationTitle={
-        originalAlias ? "Edit SSH Connection" : "New SSH Connection"
+        originalAlias ? `Edit · ${originalAlias}` : "New SSH Connection"
       }
       actions={
         <ActionPanel>
@@ -441,6 +441,7 @@ export default function Connections() {
       {loadError && (
         <List.Section title="Previous Raycast Connections">
           <List.Item
+            id="legacy:load-error"
             icon={Icon.ExclamationMark}
             title="Could not load previous Raycast connections"
             subtitle={loadError}
@@ -453,7 +454,8 @@ export default function Connections() {
       >
         {sorted.map((connection) => (
           <List.Item
-            key={connection.id}
+            key={`legacy:${connection.id}`}
+            id={`legacy:${connection.id}`}
             icon={{
               source: connection.favorite ? Icon.Star : Icon.Terminal,
               tintColor: connection.favorite ? Color.Yellow : undefined,
@@ -550,6 +552,7 @@ export default function Connections() {
           return (
             <List.Item
               key={item.id}
+              id={item.id}
               icon={presentation?.emoji || Icon.Terminal}
               title={host}
               subtitle={subtitle}
@@ -644,7 +647,11 @@ export default function Connections() {
                     icon={Icon.Pencil}
                     shortcut={Keyboard.Shortcut.Common.Edit}
                     target={
-                      <ConfigEditor alias={host} onSaved={refreshConfig} />
+                      <ConfigEditor
+                        key={`edit:${host}`}
+                        alias={host}
+                        onSaved={refreshConfig}
+                      />
                     }
                   />
                   <Action.Push
@@ -652,6 +659,7 @@ export default function Connections() {
                     icon={Icon.Emoji}
                     target={
                       <EmojiForm
+                        key={`icon:${host}`}
                         alias={host}
                         initial={presentation?.customEmoji || ""}
                         onSaved={refreshConfig}
@@ -662,7 +670,11 @@ export default function Connections() {
                     title="Edit SSH Options"
                     icon={Icon.Gear}
                     target={
-                      <AdvancedEditor alias={host} onSaved={refreshConfig} />
+                      <AdvancedEditor
+                        key={`options:${host}`}
+                        alias={host}
+                        onSaved={refreshConfig}
+                      />
                     }
                   />
                   <Action
@@ -723,6 +735,7 @@ export default function Connections() {
       {configError && (
         <List.Section title="SSH Config">
           <List.Item
+            id="config:load-error"
             icon={Icon.ExclamationMark}
             title="Could not read SSH config"
             subtitle={configError}

@@ -2,10 +2,6 @@
 
 在 Raycast 中搜索和管理 SSH 连接，按回车使用你选择的终端登录。连接直接使用本机 OpenSSH 配置，也可以为常用主机设置 emoji。
 
-![SSH Connections 列表：搜索示例主机、查看地址和端口](assets/screenshots/connections.jpg)
-
-截图使用虚构的示例主机和地址。
-
 ## 安装与启动
 
 需要 macOS、Raycast、Node.js 和 pnpm。在本目录执行：
@@ -22,8 +18,6 @@ pnpm dev
 列表自动读取 `~/.ssh/config` 和 `Include` 文件中的具体主机别名。搜索别名、主机地址或用户名，选中连接后按 **Return** 启动 SSH。通配符和排除规则不会作为独立连接显示。
 
 按 **⌘ N** 新建连接：填写 SSH Alias，以及可选的 HostName、User、Port 和 Identity File；留空的字段交给 SSH 的配置和默认值处理。保存后会写入 `~/.ssh/config`。
-
-![新建 SSH 连接表单](assets/screenshots/new-connection.jpg)
 
 选中连接后按 **⌘ K** 打开操作菜单：
 
