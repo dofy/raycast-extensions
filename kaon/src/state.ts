@@ -12,6 +12,8 @@ export interface Snapshot {
    * cannot relabel 7 days of usage as 30.
    */
   summaryRange: string | null;
+  /** Earliest retry after a failed summary request. */
+  summaryRetryAt: number;
   /** Automation token expiry, epoch ms. */
   expiresAt: number | null;
   /** Epoch ms of the last `/auth/me` read, successful or not. */
@@ -32,6 +34,7 @@ export const EMPTY_SNAPSHOT: Snapshot = {
   summary: null,
   summaryAt: null,
   summaryRange: null,
+  summaryRetryAt: 0,
   expiresAt: null,
   expiryCheckedAt: null,
   lastOK: null,
@@ -88,23 +91,38 @@ export async function refresh(
 ): Promise<Snapshot> {
   const now = options.nowMs ?? Date.now();
   if (prev.fatal) return prev;
-  if (!options.force && now < prev.nextFetch) return prev;
+
+  // A range change has to get past the fetch floor: the cached breakdown
+  // answers a different question now, and waiting out the floor would leave
+  // the views labelling the old window as the newly chosen one. Only the
+  // breakdown is refetched in that case — the budget counter does not depend
+  // on the range, so the floor still protects it.
+  const rangeChanged =
+    prev.summaryRange !== null && prev.summaryRange !== client.range;
+  const throttled = !options.force && now < prev.nextFetch;
+  if (
+    throttled &&
+    (!rangeChanged || prev.failures > 0 || now < prev.summaryRetryAt)
+  )
+    return prev;
 
   const next: Snapshot = { ...prev };
 
-  try {
-    next.budget = await client.budget();
-    next.lastOK = now;
-    next.lastError = null;
-    next.failures = 0;
-    next.nextFetch = now + MIN_FETCH_INTERVAL_MS;
-  } catch (error) {
-    const failure = failureFrom(error);
-    next.failures = prev.failures + 1;
-    next.lastError = failure.message;
-    next.nextFetch = now + backoffMs(next.failures);
-    if (failure.fatal) next.fatal = failure.message;
-    return next;
+  if (!throttled) {
+    try {
+      next.budget = await client.budget();
+      next.lastOK = now;
+      next.lastError = null;
+      next.failures = 0;
+      next.nextFetch = now + MIN_FETCH_INTERVAL_MS;
+    } catch (error) {
+      const failure = failureFrom(error);
+      next.failures = prev.failures + 1;
+      next.lastError = failure.message;
+      next.nextFetch = now + backoffMs(next.failures);
+      if (failure.fatal) next.fatal = failure.message;
+      return next;
+    }
   }
 
   // A range change invalidates the breakdown on its own: the cached numbers
@@ -113,14 +131,17 @@ export async function refresh(
     next.summaryAt === null ||
     next.summaryRange !== client.range ||
     now - next.summaryAt > SUMMARY_TTL_MS;
-  if (options.force || summaryStale) {
+  if (options.force || (summaryStale && now >= prev.summaryRetryAt)) {
     try {
       next.summary = await client.summary();
       next.summaryAt = now;
       next.summaryRange = client.range;
+      next.summaryRetryAt = 0;
+      if (throttled) next.lastError = null;
     } catch (error) {
       const failure = failureFrom(error);
       next.lastError = failure.message;
+      next.summaryRetryAt = now + backoffMs(1);
       if (failure.fatal) {
         next.fatal = failure.message;
         return next;
@@ -136,7 +157,7 @@ export async function refresh(
     next.expiryCheckedAt === null ||
     next.expiresAt <= now ||
     now - next.expiryCheckedAt > EXPIRY_TTL_MS;
-  if (options.force || expiryStale) {
+  if (options.force || (!throttled && expiryStale)) {
     try {
       const me = await client.authMe();
       next.expiresAt = parseExpiry(me.automation_token_expires_at);
@@ -163,6 +184,7 @@ export function clearFatal(prev: Snapshot): Snapshot {
     fatal: null,
     failures: 0,
     nextFetch: 0,
+    summaryRetryAt: 0,
     lastError: null,
     expiresAt: null,
     expiryCheckedAt: null,

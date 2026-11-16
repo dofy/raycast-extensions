@@ -5,7 +5,9 @@ import {
   Icon,
   Keyboard,
   List,
+  Toast,
   openExtensionPreferences,
+  showToast,
 } from "@raycast/api";
 import {
   clockTime,
@@ -163,13 +165,32 @@ export default function Command() {
   const totals = summary?.totals;
   const blocked = fatal ?? setupError;
 
-  const actions = (
+  // A plain refresh inside the fetch floor issues no request at all, which is
+  // indistinguishable from "the numbers did not move" unless it is said out
+  // loud. Force Refetch is the way past it, so the toast names it.
+  const refreshNow = async () => {
+    const result = await reload(false);
+    if (result !== "throttled") return;
+    await showToast({
+      style: Toast.Style.Success,
+      title: "已是最新",
+      message: "请求暂受刷新间隔或错误退避限制，用 Force Refetch 可绕过",
+    });
+  };
+
+  // The token link moves to the front for the row that advertises it, so that
+  // row's primary action matches its accessory while it keeps Refresh and the
+  // rest. It is never listed twice.
+  const actionsWith = (tokensFirst = false) => (
     <ActionPanel>
+      {tokensFirst ? (
+        <Action.OpenInBrowser title="Open Automation Tokens" url={TOKENS_URL} />
+      ) : null}
       <Action
         title="Refresh"
         icon={Icon.ArrowClockwise}
         shortcut={Keyboard.Shortcut.Common.Refresh}
-        onAction={() => void reload(false)}
+        onAction={() => void refreshNow()}
       />
       <Action
         title="Force Refetch"
@@ -189,7 +210,9 @@ export default function Command() {
         url={CONSOLE_URL}
         shortcut={Keyboard.Shortcut.Common.Open}
       />
-      <Action.OpenInBrowser title="Open Automation Tokens" url={TOKENS_URL} />
+      {tokensFirst ? null : (
+        <Action.OpenInBrowser title="Open Automation Tokens" url={TOKENS_URL} />
+      )}
       <Action
         title="Configure Extension"
         icon={Icon.Gear}
@@ -197,6 +220,7 @@ export default function Command() {
       />
     </ActionPanel>
   );
+  const actions = actionsWith();
 
   if (blocked) {
     return (
@@ -233,6 +257,7 @@ export default function Command() {
             icon={{ source: Icon.Key, tintColor: Color.Orange }}
             title={note}
             accessories={[{ text: "Automation Tokens" }]}
+            actions={actionsWith(true)}
           />
         </List.Section>
       ) : null}
