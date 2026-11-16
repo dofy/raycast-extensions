@@ -12,6 +12,8 @@ export interface Snapshot {
    * cannot relabel 7 days of usage as 30.
    */
   summaryRange: string | null;
+  /** Earliest retry after a failed summary request. */
+  summaryRetryAt: number;
   /** Automation token expiry, epoch ms. */
   expiresAt: number | null;
   /** Epoch ms of the last `/auth/me` read, successful or not. */
@@ -32,6 +34,7 @@ export const EMPTY_SNAPSHOT: Snapshot = {
   summary: null,
   summaryAt: null,
   summaryRange: null,
+  summaryRetryAt: 0,
   expiresAt: null,
   expiryCheckedAt: null,
   lastOK: null,
@@ -97,7 +100,11 @@ export async function refresh(
   const rangeChanged =
     prev.summaryRange !== null && prev.summaryRange !== client.range;
   const throttled = !options.force && now < prev.nextFetch;
-  if (throttled && !rangeChanged) return prev;
+  if (
+    throttled &&
+    (!rangeChanged || prev.failures > 0 || now < prev.summaryRetryAt)
+  )
+    return prev;
 
   const next: Snapshot = { ...prev };
 
@@ -124,14 +131,17 @@ export async function refresh(
     next.summaryAt === null ||
     next.summaryRange !== client.range ||
     now - next.summaryAt > SUMMARY_TTL_MS;
-  if (options.force || summaryStale) {
+  if (options.force || (summaryStale && now >= prev.summaryRetryAt)) {
     try {
       next.summary = await client.summary();
       next.summaryAt = now;
       next.summaryRange = client.range;
+      next.summaryRetryAt = 0;
+      if (throttled) next.lastError = null;
     } catch (error) {
       const failure = failureFrom(error);
       next.lastError = failure.message;
+      next.summaryRetryAt = now + backoffMs(1);
       if (failure.fatal) {
         next.fatal = failure.message;
         return next;
@@ -174,6 +184,7 @@ export function clearFatal(prev: Snapshot): Snapshot {
     fatal: null,
     failures: 0,
     nextFetch: 0,
+    summaryRetryAt: 0,
     lastError: null,
     expiresAt: null,
     expiryCheckedAt: null,

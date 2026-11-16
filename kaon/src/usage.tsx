@@ -21,7 +21,6 @@ import {
 } from "./format.ts";
 import type { BudgetBody, Severity, UsageRow } from "./format.ts";
 import { CONSOLE_URL, TOKENS_URL } from "./links.ts";
-import { MIN_FETCH_INTERVAL_MS } from "./state.ts";
 import { useKaon } from "./use-kaon.ts";
 
 function tintFor(severity: Severity): Color | undefined {
@@ -170,12 +169,12 @@ export default function Command() {
   // indistinguishable from "the numbers did not move" unless it is said out
   // loud. Force Refetch is the way past it, so the toast names it.
   const refreshNow = async () => {
-    const changed = await reload(false);
-    if (changed) return;
+    const result = await reload(false);
+    if (result !== "throttled") return;
     await showToast({
       style: Toast.Style.Success,
       title: "已是最新",
-      message: `最小间隔 ${Math.round(MIN_FETCH_INTERVAL_MS / 60_000)} 分钟内不再请求，用 Force Refetch 可绕过`,
+      message: "请求暂受刷新间隔或错误退避限制，用 Force Refetch 可绕过",
     });
   };
 

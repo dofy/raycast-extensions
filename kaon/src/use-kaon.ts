@@ -15,8 +15,10 @@ export interface KaonState {
   /** A setup or preference problem, as opposed to an API failure. */
   setupError: string | null;
   isLoading: boolean;
-  /** Resolves false when the pass was throttled and nothing was requested. */
-  reload: (force?: boolean) => Promise<boolean>;
+  /** Distinguishes a throttled pass from a busy or failed refresh. */
+  reload: (
+    force?: boolean,
+  ) => Promise<"refreshed" | "throttled" | "busy" | "error">;
   retryAfterStop: () => Promise<void>;
 }
 
@@ -41,7 +43,7 @@ export function useKaon(): KaonState {
 
   const run = useCallback(
     async (force: boolean, seed?: (prev: Snapshot) => Snapshot) => {
-      if (inFlight.current) return false;
+      if (inFlight.current) return "busy" as const;
       inFlight.current = true;
       setIsLoading(true);
       try {
@@ -57,12 +59,16 @@ export function useKaon(): KaonState {
         // `refresh` returns the snapshot it was given, unchanged, when the
         // fetch floor swallowed the pass. Without this the views cannot tell a
         // refresh that did nothing from one that found the same numbers.
-        return next !== base;
+        return next !== base
+          ? ("refreshed" as const)
+          : base.fatal
+            ? ("error" as const)
+            : ("throttled" as const);
       } catch (error) {
         setSetupError(
           error instanceof Error ? error.message : "unexpected failure",
         );
-        return false;
+        return "error" as const;
       } finally {
         inFlight.current = false;
         setIsLoading(false);

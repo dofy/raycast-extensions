@@ -10,9 +10,21 @@
 | OpenClaw     | [openclaw](openclaw/README.md)         | Status、Sessions、Logs、Restart：查看本机 Gateway 状态、会话、日志，以及手动重启/清理    | 本机 OpenClaw CLI 和 Gateway |
 | LinguaDock   | [linguadock](linguadock/README.md)     | Translate Text：选区或手动输入翻译，支持 21 种目标语言及中英自动互译                     | 自定义 OpenAI-compatible API |
 | Emoji Append | [emoji-append](emoji-append/README.md) | Append Contextual Emoji：按快捷键为选中文字追加 1～3 个应景 emoji                        | 自定义 OpenAI-compatible API |
+| SSH Connections | [ssh-manager](ssh-manager/README.md) | SSH Connections：管理、搜索并连接 SSH 主机，选择默认终端 | 本机 SSH 和终端 |
 | Kaon Router  | [kaon](kaon/README.md)                 | Kaon Balance：菜单栏显示当日花费；Kaon Usage：预算、限速及按模型/Key/供应商/天的用量明细 | Kaon Admin API（usage:read） |
 
-JWT Editor 提供解码和查看功能，不验证 token 签名。
+## 发布与安装
+
+| 扩展 | 发布渠道 | 状态 |
+| --- | --- | --- |
+| JWT Editor（公开版名称 JWT Decoder） | Raycast 公开 Store | [审核中](https://github.com/raycast/extensions/pull/33566) |
+| Emoji Append | Raycast 公开 Store | [审核中](https://github.com/raycast/extensions/pull/33567) |
+| SSH Connections | Raycast 公开 Store | [审核中](https://github.com/raycast/extensions/pull/33568) |
+| OpenClaw（公开版名称 OpenClaw Gateway Manager） | Raycast 公开 Store | [审核中](https://github.com/raycast/extensions/pull/33569) |
+| Kaon Router | phpZ.xyz 私有 Store | [已发布](https://www.raycast.com/phpz-xyz/kaon) |
+| LinguaDock | phpZ.xyz 私有 Store | [已发布](https://www.raycast.com/phpz-xyz/linguadock) |
+
+公开版需要 Raycast 审核并合并后才会上架；审核期间可按下方方法在本地开发使用。私有 Store 扩展仅供组织成员安装。公开版名称或功能可能因审核发生变化，请以对应 PR 的状态为准。
 
 ## 安装与开发
 
@@ -46,5 +58,6 @@ pnpm build
 - Emoji Append 和 LinguaDock 在各自扩展设置中独立填写 API Base URL、API Key、模型。API Key 使用 password 字段，源码不包含密钥；执行时，输入文字会发送到配置的服务。
 - Kaon Router 读 Kaon Admin API，只需 `usage:read` scope。token 可填在扩展设置（password 字段），也可留空改读 `~/.config/kaon/token`，与 Hammerspoon 的菜单栏组件共用同一个文件；token 不进缓存，也不出现在界面文案。401/403/429 和 Kaon 的停止信号会让扩展停止请求，需手动 Retry 清除，详见插件 README。
 - JWT Editor 在本地解码，不验证签名。Quick Link 会将 token 放入链接上下文并保存到 Raycast；不适合保存长期有效或生产用途的 token。
+- SSH Connections 读取和编辑本机 SSH 配置，密码和私钥内容由 SSH 管理；条件路由在连接时由 SSH 判断。详见 [SSH Connections 使用说明](ssh-manager/README.md)。
 - OpenClaw 调用本机 CLI，CLI、状态目录、配置文件和日志路径支持自动发现或自定义，超时及日志展示参数均可在扩展设置中调整，详见插件 README。重启和清理会改变 Gateway/会话状态，只有执行相应动作时才触发。
 - `pnpm dev`/`pnpm build` 是本地开发操作；`publish` 类脚本会发布扩展，应在确认发布目标后单独执行。

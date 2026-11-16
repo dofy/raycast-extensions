@@ -559,3 +559,31 @@ test("a failed expiry read keeps the known expiry and retries later", async () =
   assert.equal(next.expiryCheckedAt, first.expiryCheckedAt);
   assert.equal(next.fatal, null);
 });
+
+test("a range change respects budget failure backoff", async () => {
+  const now = Date.parse("2026-11-09T08:00:00Z");
+  const good = await refresh(stubClient().client, EMPTY_SNAPSHOT, { nowMs: now });
+  const failing = stubClient({ budget: () => { throw new ApiError({ message: "network unreachable", fatal: false }); } });
+  const failed = await refresh(failing.client, good, { nowMs: now + 1000, force: true });
+  const changed = stubClient({ range: "30d" });
+  const held = await refresh(changed.client, failed, { nowMs: now + 2000 });
+  assert.equal(held, failed);
+  assert.deepEqual(changed.calls, { budget: 0, summary: 0, authMe: 0 });
+});
+
+test("a failed range refresh backs off and retries without relabelling cached data", async () => {
+  const now = Date.parse("2026-11-09T08:00:00Z");
+  const good = await refresh(stubClient().client, EMPTY_SNAPSHOT, { nowMs: now });
+  const failing = stubClient({ range: "30d", summary: () => { throw new ApiError({ message: "network unreachable", fatal: false }); } });
+  const failed = await refresh(failing.client, good, { nowMs: now + 1000 });
+  assert.equal(failed.summaryRange, "7d");
+  assert.equal(failed.summaryRetryAt, now + 1000 + backoffMs(1));
+  const recovering = stubClient({ range: "30d", summary: () => ({ ...SUMMARY, time_range: "30d" }) });
+  assert.equal(await refresh(recovering.client, failed, { nowMs: now + 2000 }), failed);
+  assert.equal(recovering.calls.summary, 0);
+  const recovered = await refresh(recovering.client, failed, { nowMs: failed.summaryRetryAt });
+  assert.equal(recovered.summaryRange, "30d");
+  assert.equal(recovered.summaryRetryAt, 0);
+  assert.equal(recovered.lastError, null);
+  assert.equal(recovering.calls.summary, 1);
+});
